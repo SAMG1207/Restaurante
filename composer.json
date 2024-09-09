@@ -1,0 +1,19 @@
+{
+  "name": "sergi/restaurante",
+  "description": "a project",
+  "type": "project",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Sergio Moreno",
+      "email": "samgdev91@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {}
+}
