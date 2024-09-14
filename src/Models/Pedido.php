@@ -17,6 +17,19 @@ Class Pedido extends BaseModel{
         $this->servicio = new Servicios();
     }
 
+    private function pedidosExistentes($id_servicio){
+      
+        if(is_int($id_servicio) && $this->servicio->seleccionaUnaMesaAbierta($id_servicio) ){
+            $sql = "SELECT * FROM servicios WHERE id_servicio = ?";
+            $stmt= $this->conn->prepare($sql);
+            $stmt->bindParam(1, $id_servicio);
+            $stmt->execute();
+            return $stmt->fetch()?:false;
+
+        }else{
+            return false;
+        }
+    }
   
     public function insertPedido(int $id_servicio, int $id_producto, int $cantidad){
     try{
@@ -47,6 +60,10 @@ Class Pedido extends BaseModel{
         throw new Exception("Error al insertar pedido: " . $e->getMessage());
        
     }   
+    }
+
+    public function borrarPedido ($id_pedido){
+        
     }
 }
 
