@@ -2,35 +2,40 @@
 
 declare(strict_types=1);
 
-use App\Controllers\BebidasController;
-use App\Controllers\CafeController;
-use App\Controllers\PizzaController;
 
-$pizzaController = new PizzaController();
-$bebidasController = new BebidasController();
-$cafeController = new CafeController();
-$routes =[
-    '/pizzas'=>function() use($pizzaController){
-        $pizzaController->verTodasLasPizzas();
+use App\Controllers\ProductosController;
+
+$productoController = new ProductosController();
+
+
+
+$routes = [
+'/productos' => function() use ($productoController):void{
+        $productoController->selectProductos();
     },
 
-    '/pizzas/{id}'=> function ($id) use($pizzaController){
-        $pizzaController->verPizza((int)$id); //el int va dentro del parentesis para asegurar que se pasa a numero
+    '/productos/{id}' => function($id) use ($productoController):void{
+        $productoController->selectUnProducto((int) $id);
     },
 
-    '/bebidas' => function() use($bebidasController){
-        $bebidasController->verTodasLasBebidas();
+
+    '/pizzas' => function() use ($productoController) {
+        $productoController->verTodosLosProductosPorTipo('pizza');
     },
 
-    '/bebidas/{id}'=> function($id) use($bebidasController){
-        $bebidasController->verUnaBebida((int)$id);
+
+    '/bebidas' => function() use ($productoController) {
+        $productoController->verTodosLosProductosPorTipo('bebida');
     },
 
-    '/cafes' =>function() use($cafeController){
-        $cafeController->verTodosLosCafes();
+    '/cafes' => function() use ($productoController) {
+        $productoController->verTodosLosProductosPorTipo('cafe');
     },
 
-    '/cafes/{id}' => function($id) use($cafeController){
-        $cafeController->verUnCafe((int)$id);
+    '/test' => function():void {
+        require_once __DIR__ . '/../../public/test.php';
+
     }
+
+
 ];

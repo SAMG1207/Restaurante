@@ -8,7 +8,7 @@ Class Database{
     private $dbName ="pizzeria";
     private $username="root";
     private $password = "";
-    public $conn;
+    public $conn = null;
 
     public function getConnection(): ?PDO{
         $this->conn = null;

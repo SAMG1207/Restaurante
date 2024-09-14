@@ -21,6 +21,13 @@ class ComposerStaticInit2fe9e1e04a5f7befbae970a1be32cb4d
     );
 
     public static $classMap = array (
+        'App\\Config\\Database' => __DIR__ . '/../..' . '/src/Config/Database.php',
+        'App\\Controllers\\BebidasController' => __DIR__ . '/../..' . '/src/Controllers/BebidasController.php',
+        'App\\Controllers\\CafeController' => __DIR__ . '/../..' . '/src/Controllers/CafeController.php',
+        'App\\Controllers\\PizzaController' => __DIR__ . '/../..' . '/src/Controllers/PizzaController.php',
+        'App\\Models\\Bebidas' => __DIR__ . '/../..' . '/src/Models/Bebidas.php',
+        'App\\Models\\Cafes' => __DIR__ . '/../..' . '/src/Models/Cafes.php',
+        'App\\Models\\Pizza' => __DIR__ . '/../..' . '/src/Models/Pizza.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
