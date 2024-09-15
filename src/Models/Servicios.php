@@ -28,45 +28,55 @@ Class Servicios extends BaseModel{
         
     }
 
-    public function abrirServicio(int $mesa){
-        try{
-            if(!$this->mesaAbierta($mesa)){
+    public function abrirServicio(int $mesa) {
+        try {
+            // Verifica si la mesa ya está abierta
+            if (!$this->mesaAbierta($mesa)) {
+                // Inicia una transacción
                 $this->conn->beginTransaction();
-                $sql = "INSERT INTO servicios (mesa, hora_entrada, hora_salida, total_gastado) VALUES(?, NOW(), NULL, NULL)";
+    
+                // Insertar el nuevo servicio
+                $sql = "INSERT INTO servicios (mesa, hora_entrada, hora_salida, total_gastado) VALUES (?, NOW(), NULL, NULL)";
                 $stmt = $this->conn->prepare($sql);
-                $stmt->bindParam(1, $mesa, PDO::PARAM_INT );
+                $stmt->bindParam(1, $mesa, PDO::PARAM_INT);
                 $stmt->execute();
                 $this->conn->commit();
-                return $this->conn->lastInsertId();
+                //return $this->conn->lastInsertId(); 
+                return $this->mesaAbierta($mesa);
+               }else{
+  // Si la mesa ya está abierta, devolver falso o algún indicativo
+                  return false;
             }
-                return;
-        }catch(Exception $e){
-             if($this->conn->inTransaction()){
-                $this->conn->rollBack();
-             }
-             return $e->getMessage();
-        }
-     
-    }
 
-    public function mesaAbierta(int $mesa): bool {
+        } catch (Exception $e) {
+            // En caso de un error, revertir la transacción y devolver el mensaje de error
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            throw new Exception("Error al abrir servicio: " . $e->getMessage());
+        }
+    }
+    
+
+    public function mesaAbierta(int $mesa): mixed {
         $sql = "SELECT id_servicio FROM servicios WHERE mesa = ? AND hora_salida IS NULL";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(1, $mesa, PDO::PARAM_INT);
         $stmt->execute();
         // Devuelve true si se encuentra al menos una fila, de lo contrario false
-        return $stmt->fetchColumn() !== false;
+        return $stmt->fetchColumn();// !== false;
     }
     
-    private function obtenIdMesaAbierta(int $mesa):int{
+    private function obtenIdMesaAbierta(int $mesa):bool{
         if ($this->mesaAbierta($mesa)) {
             // Obtén el id_servicio de la mesa abierta
             $sql = "SELECT id_servicio FROM servicios WHERE mesa = ? AND hora_salida IS NULL";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(1, $mesa, PDO::PARAM_INT);
             $stmt->execute();
-            $idServicio = $stmt->fetchColumn();
-            return $idServicio;
+            $result = $stmt->fetchColumn();
+            error_log("Mesa $mesa estado: " . ($result ? "Abierta" : "Cerrada"));
+            return $result !== false;
         }
         return 0;
     }

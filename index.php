@@ -26,11 +26,11 @@ foreach ($routes as $route => $callback) {
     // Reemplazar los parámetros {id} por una expresión regular para capturarlos
     $pattern = preg_replace('/\{[a-zA-Z0-9_]+\}/', '([a-zA-Z0-9_]+)', str_replace('/', '\/', $route)); 
     //
-    var_dump('Request URI after replacement:', $requestUri);
+    //var_dump('Request URI after replacement:', $requestUri);
     if (preg_match('/^' . $pattern . '$/', $requestUri, $matches)) {
         // Depurar la ruta coincidente y los parámetros capturados
-        var_dump('Matched Route:', $route);
-        var_dump('Parameters:', $matches);
+       //var_dump('Matched Route:', $route);
+        //var_dump('Parameters:', $matches);
 
         array_shift($matches); // Eliminar el primer elemento que es la ruta completa
         /**
