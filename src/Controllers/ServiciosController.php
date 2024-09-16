@@ -6,15 +6,15 @@ use App\Models\Servicios;
 use Exception;
 
 Class ServiciosController{
-    private Servicios $serviciosContronller ;
+    private Servicios $serviciosController ;
 
     public function __construct(){
-          $this->serviciosContronller = new Servicios();
+          $this->serviciosController = new Servicios();
     }
 
     public function abrirServicioController($mesa){
 // ASIGNAMOS A PHP
-              $idServicio = $this->serviciosContronller->abrirServicio($mesa);
+              $idServicio = $this->serviciosController->abrirServicio($mesa);
             if($idServicio){
                 echo json_encode([
                 'status'=>'exitoso',
@@ -31,17 +31,34 @@ Class ServiciosController{
             }
       
         }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    public function cerrarServicioController($mesa){
+            $mesaCerrada = $this->serviciosController->cerrarMesa($mesa);
+            if($mesaCerrada){
+                echo json_encode([
+                    'status'=>'exitoso',
+                    'message'=>'mesa cerrada correctamente',
+                    'cerrada'=>$mesaCerrada
+                ]);
+                http_response_code(201);
+            }else{
+                echo json_encode([
+                    'error'=>'mesa no se ha podido cerrar'
+                ]);
+                http_response_code(400);
+            }
+        }
+     
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

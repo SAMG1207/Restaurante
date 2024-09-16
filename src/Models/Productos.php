@@ -25,10 +25,10 @@ public function selectUnProducto(int $id_producto): mixed{
     try{
         $query = "SELECT * FROM productos WHERE id_producto = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $id_producto, );
+        $stmt->bindParam(1, $id_producto, PDO::PARAM_INT );
         $stmt->execute();
         $result =  $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result? :false;
+        return $result !== false ? $result : false;
     }catch(Exception $e){
         return (["Error"=>$e->getMessage()]);
     }
