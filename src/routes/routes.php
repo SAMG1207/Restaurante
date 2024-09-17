@@ -100,6 +100,30 @@ $routes = [
         http_response_code(405); // Código 405: Método no permitido
         echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
     }
+},
+
+'/deleteproduct' => function() use($pedidoController){
+    if($_SERVER["REQUEST_METHOD"] === "DELETE"){
+        try{
+            $data = json_decode(file_get_contents('php://input'), true);
+            if (isset($data['mesa'], $data['id_producto'], $data['cantidad']) &&
+            is_int($data['mesa']) && is_int($data['id_producto']) && is_int($data['cantidad'])){
+                $pedidoController->eliminarPedido((int)$data['mesa'], (int)$data['id_producto'], (int)$data['cantidad']);
+
+            }else{
+                echo json_encode(['status' => 'error', 'message' => 'Datos inválidos']);
+                http_response_code(400);
+            }
+        }catch (Exception $e) {
+            // Manejo de excepciones
+            echo json_encode(['status' => 'error', 'message' => 'Error en el servidor: ' . $e->getMessage()]);
+            http_response_code(500); // Código 500: Error interno del servidor
+        }
+    }else {
+        // Responde con un error 405 si el método HTTP no es DELETE
+        http_response_code(405); // Código 405: Método no permitido
+        echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+    }
 }
 
 

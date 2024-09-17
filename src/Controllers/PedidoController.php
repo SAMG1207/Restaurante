@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\Pedido;
+use CachingIterator;
 use Exception;
 
 class PedidoController{
@@ -14,19 +15,60 @@ class PedidoController{
     }
 
     public function hacerPedido(int $mesa, $id_producto, $cantidad){
-        $pedido = $this->pedidoController->insertPedido($mesa, $id_producto, $cantidad);
-        if($pedido){
-            echo json_encode([
-                'status'=>'exitoso',
-                'message' => 'Mesa abierta correctamente',
-                'id_servicio' => $pedido
-                ]);
+        try{
+            $pedido = $this->pedidoController->insertPedido($mesa, $id_producto, $cantidad);
+            if($pedido){
                 http_response_code(201);
-        }else{
+                echo json_encode([
+                    'status'=>'exitoso',
+                    'message' => 'Productos insertados correctamente'
+                    ]);
+                   
+            }else{
+                http_response_code(400);
+                echo json_encode([
+                    'error'=>'ha habido un error'
+                ]);
+                
+            }
+        }catch(Exception $e){
+            error_log("Error en borrarPedido: " . $e->getMessage());
+
+            // Enviar código de error 500 y una respuesta JSON de error genérico
+            http_response_code(500);
             echo json_encode([
-                'error'=>'ha habido un error'
+                'status' => 'error',
+                'message' => 'Error interno en el servidor'
             ]);
-            http_response_code(400);
         }
+     
+    }
+
+    public function eliminarPedido (int $mesa, $id_producto, $cantidad){
+        try{
+            $pedido = $this->pedidoController->borrarPedido($mesa, $id_producto, $cantidad);
+            if($pedido){
+                echo json_encode([
+                    'status'=>'exitoso',
+                    'message' => 'Productos Eliminados correctamente'
+                    ]);
+                    http_response_code(201);
+            }else{
+                echo json_encode([
+                    'error'=>'ha habido un error'
+                ]);
+                http_response_code(400);
+            }
+        }catch(Exception $e){
+            error_log("Error en borrarPedido: " . $e->getMessage());
+
+            // Enviar código de error 500 y una respuesta JSON de error genérico
+            http_response_code(500);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Error interno en el servidor'
+            ]);
+        }
+       
     }
 }

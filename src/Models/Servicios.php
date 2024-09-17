@@ -116,5 +116,13 @@ END;
 //
 DELIMITER ;
      * 
+     * 
+     * 
+     * TAMBIEN PARA CUANDO SE ELIMINAN PEDIDOS 
+     * BEGIN
+    UPDATE servicios
+    SET total_gastado = total_gastado - OLD.totalPrecio
+    WHERE id_servicio = OLD.id_servicio;
+END
      */
 }
