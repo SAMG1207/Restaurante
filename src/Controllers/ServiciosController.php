@@ -34,21 +34,45 @@ Class ServiciosController{
     public function cerrarServicioController($mesa){
             $mesaCerrada = $this->serviciosController->cerrarMesa($mesa);
             if($mesaCerrada){
+                http_response_code(201);
                 echo json_encode([
                     'status'=>'exitoso',
                     'message'=>'mesa cerrada correctamente',
                     'cerrada'=>$mesaCerrada
                 ]);
-                http_response_code(201);
+                
             }else{
+                http_response_code(400);
                 echo json_encode([
                     'error'=>'mesa no se ha podido cerrar'
                 ]);
-                http_response_code(400);
+                
             }
         }
      
+
+        public function verServicio ( int $mesa): void{
+            $mesaAbierta = $this->serviciosController->seleccionaUnaMesaAbierta($this->serviciosController->mesaAbierta($mesa));   
+            if($mesaAbierta){
+                http_response_code(201);
+                echo json_encode([
+                    'status' => 'exitoso',
+                    'elementos'=>[
+                        'id_servicio'=>$mesaAbierta['id_servicio'],
+                        'hora_entrada'=>$mesaAbierta['hora_abierta'],
+                        'total_gastado'=>$mesaAbierta['total_gastado']
+                    ]
+                    ]);
+            }else{
+                http_response_code(400);
+                echo json_encode([
+                    'error'=>'mesa no se ha podido cerrar'
+                ]);
+            }
+        }
     }
+
+    
     
     
     

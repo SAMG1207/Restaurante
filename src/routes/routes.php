@@ -72,7 +72,7 @@ $routes = [
         
     },
 
-'/addproduct' => function() use ($pedidoController) {
+    '/addproduct' => function() use ($pedidoController) {
     // Asegúrate de que el método HTTP es POST
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
@@ -100,9 +100,9 @@ $routes = [
         http_response_code(405); // Código 405: Método no permitido
         echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
     }
-},
+    },
 
-'/deleteproduct' => function() use($pedidoController){
+    '/deleteproduct' => function() use($pedidoController){
     if($_SERVER["REQUEST_METHOD"] === "DELETE"){
         try{
             $data = json_decode(file_get_contents('php://input'), true);
@@ -124,7 +124,11 @@ $routes = [
         http_response_code(405); // Código 405: Método no permitido
         echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
     }
-}
+    },
+
+    '/verproductos/{mesa}' => function($mesa) use($pedidoController){
+        $pedidoController->verProductos((int)$mesa);
+    }
 
 
 

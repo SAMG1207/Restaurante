@@ -48,16 +48,18 @@ class PedidoController{
         try{
             $pedido = $this->pedidoController->borrarPedido($mesa, $id_producto, $cantidad);
             if($pedido){
+                http_response_code(201);
                 echo json_encode([
                     'status'=>'exitoso',
                     'message' => 'Productos Eliminados correctamente'
                     ]);
-                    http_response_code(201);
+                    
             }else{
+                http_response_code(400);
                 echo json_encode([
                     'error'=>'ha habido un error'
                 ]);
-                http_response_code(400);
+               
             }
         }catch(Exception $e){
             error_log("Error en borrarPedido: " . $e->getMessage());
@@ -70,5 +72,21 @@ class PedidoController{
             ]);
         }
        
+    }
+
+    public function verProductos ($mesa){
+        $productos = $this->pedidoController->pedidosExistentes($mesa);
+        if($productos){
+            http_response_code(201);
+            echo json_encode([
+               "status"=>"exitoso",
+               "productos"=>$productos
+            ]);
+        }else{
+            http_response_code(400);
+            echo json_encode([
+                'error'=>'ha habido un error'
+            ]);
+        }
     }
 }

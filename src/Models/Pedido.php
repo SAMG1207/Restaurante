@@ -17,14 +17,17 @@ Class Pedido extends BaseModel{
         $this->servicio = new Servicios();
     }
 
-    private function pedidosExistentes($id_servicio){
-      
-        if(is_int($id_servicio) && $this->servicio->seleccionaUnaMesaAbierta($id_servicio) ){
-            $sql = "SELECT * FROM servicios WHERE id_servicio = ?";
+    public function pedidosExistentes($mesa){
+      $id_servicio = $this->servicio->mesaAbierta($mesa);
+        if(is_int($id_servicio) ){
+            $sql = "SELECT pr.nombre as product, SUM(pe.totalPrecio) as total_producto 
+            FROM pedidos pe INNER JOIN productos pr ON pe.id_producto = pr.id_producto
+            WHERE pe.id_servicio = ?
+            GROUP BY pr.nombre ";
             $stmt= $this->conn->prepare($sql);
             $stmt->bindParam(1, $id_servicio);
             $stmt->execute();
-            return $stmt->fetch()?:false;
+            return $stmt->fetchAll(PDO::FETCH_ASSOC)?:false;
 
         }else{
             return false;

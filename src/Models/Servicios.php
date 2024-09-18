@@ -19,8 +19,8 @@ Class Servicios extends BaseModel{
             $stmt= $this->conn->prepare($sql);
             $stmt->bindParam(1, $id_servicio, PDO::PARAM_INT);
             $stmt->execute();
-            $result = $stmt->fetch();
-            return $result !== false;
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: false;
         }catch(PDOException $e){
             echo ($e->getMessage());
             return false;
