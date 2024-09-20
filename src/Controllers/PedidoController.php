@@ -14,23 +14,34 @@ class PedidoController{
         $this->pedidoController = new Pedido();
     }
 
-    public function hacerPedido(int $mesa, $id_producto, $cantidad){
+    public function hacerPedido($data){
         try{
-            $pedido = $this->pedidoController->insertPedido($mesa, $id_producto, $cantidad);
-            if($pedido){
-                http_response_code(201);
-                echo json_encode([
-                    'status'=>'exitoso',
-                    'message' => 'Productos insertados correctamente'
+            header('Content-Type: application/json');
+            if (isset($data['mesa'], $data['id_producto'], $data['cantidad']) &&
+                filter_var($data['mesa'], FILTER_VALIDATE_INT) !== false &&
+                filter_var($data['id_producto'], FILTER_VALIDATE_INT) !== false &&
+                filter_var($data['cantidad'], FILTER_VALIDATE_INT) !== false
+            ){
+                $mesa = (int)$data['mesa'];
+                $id_producto = (int)$data['id_producto'];
+                $cantidad = (int)$data['cantidad'];
+                $pedido = $this->pedidoController->insertPedido($mesa, $id_producto, $cantidad);
+                if($pedido){
+                    http_response_code(201); //ES POST
+                    echo json_encode([
+                        'status'=>'exitoso',
+                        'message' => 'Productos insertados correctamente'
+                        ]);
+                       
+                }else{
+                    http_response_code(400);
+                    echo json_encode([
+                        'error'=>'ha habido un error'
                     ]);
-                   
-            }else{
-                http_response_code(400);
-                echo json_encode([
-                    'error'=>'ha habido un error'
-                ]);
-                
+                    
+                }
             }
+            
         }catch(Exception $e){
             error_log("Error en borrarPedido: " . $e->getMessage());
 
@@ -43,50 +54,66 @@ class PedidoController{
         }
      
     }
+    public function elminarPedido($data){
+        
+            try{
+                header('Content-Type: application/json');
+                if (isset($data['mesa'], $data['id_producto'], $data['cantidad']) &&
+                filter_var($data['mesa'], FILTER_VALIDATE_INT) !== false &&
+                filter_var($data['id_producto'], FILTER_VALIDATE_INT) !== false &&
+                filter_var($data['cantidad'], FILTER_VALIDATE_INT) !== false
+                ){
+                    $mesa = (int)$data['mesa'];
+                    $id_producto = (int)$data['id_producto'];
+                    $cantidad = (int)$data['cantidad']; 
 
-    public function eliminarPedido (int $mesa, $id_producto, $cantidad){
-        try{
-            $pedido = $this->pedidoController->borrarPedido($mesa, $id_producto, $cantidad);
-            if($pedido){
+                    $pedido  = $this->pedidoController->borrarPedido($mesa, $id_producto, $cantidad);
+                    if($pedido){
+                        http_response_code(200);
+                        echo json_encode([
+                            'status' => 'exitoso',
+                            'message' => 'Pedido eliminado correctamente'
+                        ]);
+                    }
+                }else{
+                    http_response_code(400);
+                    echo json_encode([
+                        'error'=>'ha habido un error'
+                    ]);
+                }
+
+            }catch(Exception $e){
+                http_response_code(500);
+                echo json_encode([
+            'status' => 'error',
+            'message' => 'Error en el servidor: ' . $e->getMessage()
+        ]);
+            }
+        }
+        
+
+    public function verProductos (int $mesa){
+        header('Content-Type: application/json');
+        if(filter_var($mesa, FILTER_VALIDATE_INT)){
+            $productos = $this->pedidoController->pedidosExistentes($mesa);
+            if($productos){
                 http_response_code(201);
                 echo json_encode([
-                    'status'=>'exitoso',
-                    'message' => 'Productos Eliminados correctamente'
-                    ]);
-                    
+                   "status"=>"exitoso",
+                   "productos"=>$productos
+                ]);
             }else{
                 http_response_code(400);
                 echo json_encode([
                     'error'=>'ha habido un error'
                 ]);
-               
             }
-        }catch(Exception $e){
-            error_log("Error en borrarPedido: " . $e->getMessage());
-
-            // Enviar código de error 500 y una respuesta JSON de error genérico
-            http_response_code(500);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Error interno en el servidor'
-            ]);
-        }
-       
-    }
-
-    public function verProductos ($mesa){
-        $productos = $this->pedidoController->pedidosExistentes($mesa);
-        if($productos){
-            http_response_code(201);
-            echo json_encode([
-               "status"=>"exitoso",
-               "productos"=>$productos
-            ]);
         }else{
             http_response_code(400);
             echo json_encode([
                 'error'=>'ha habido un error'
             ]);
         }
+       
     }
 }

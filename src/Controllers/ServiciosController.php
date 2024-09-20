@@ -12,43 +12,63 @@ Class ServiciosController{
           $this->serviciosController = new Servicios();
     }
 
-    public function abrirServicioController($mesa){
-// ASIGNAMOS A PHP
-              $idServicio = $this->serviciosController->abrirServicio($mesa);
-            if($idServicio){
-                echo json_encode([
-                'status'=>'exitoso',
-                'message' => 'Mesa abierta correctamente',
-                'id_servicio' => $idServicio
-                ]);
-                http_response_code(201); //Recurso creado
-                
-            }else{
-                echo json_encode([
-                    'error'=>'mesa ya estaba abierta'
-                ]);
-                http_response_code(400);
+    public function abrirServicioController($data){
+        try{
+            header('Content-Type: application/json');
+            if(isset($data['mesa']) && filter_var($data['mesa'], FILTER_VALIDATE_INT)){
+                $mesa = $data['mesa'];
+                $idServicio = $this->serviciosController->abrirServicio($mesa);
+                if($idServicio){
+                    http_response_code(201);
+                    echo json_encode([
+                        'status'=>'exitoso',
+                        'message' => 'Mesa abierta correctamente',
+                        'id_servicio' => $idServicio
+                        ]);
+                }else{
+                    http_response_code(400);
+                    echo json_encode([
+                        'error'=>'mesa ya estaba abierta'
+                    ]);
+                }
             }
+        }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode([
+        'status' => 'error',
+        'message' => 'Error en el servidor: ' . $e->getMessage()
+    ]);
+        }
+    }
+
       
-        }
-    public function cerrarServicioController($mesa){
-            $mesaCerrada = $this->serviciosController->cerrarMesa($mesa);
-            if($mesaCerrada){
-                http_response_code(201);
-                echo json_encode([
-                    'status'=>'exitoso',
-                    'message'=>'mesa cerrada correctamente',
-                    'cerrada'=>$mesaCerrada
-                ]);
-                
-            }else{
-                http_response_code(400);
-                echo json_encode([
-                    'error'=>'mesa no se ha podido cerrar'
-                ]);
-                
+    public function cerrarServicioController($data){
+        try{
+            header('Content-Type: application/json');
+            if(isset($data['mesa']) && filter_var($data['mesa'], FILTER_VALIDATE_INT)){
+                $mesa = $data['mesa'];
+                $servicio = $this->serviciosController->cerrarMesa($mesa);
+                if($servicio){
+                    http_response_code(201);
+                    echo json_encode([
+                        'status'=>'exitoso',
+                        'message' => 'Mesa abierta correctamente'
+                        ]);
+                }else{
+                    http_response_code(400);
+                    echo json_encode([
+                        'error'=>'mesa no abierta'
+                    ]);
+                }
             }
+        }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode([
+        'status' => 'error',
+        'message' => 'Error en el servidor: ' . $e->getMessage()]);
         }
+    }
+            
      
 
         public function verServicio ( int $mesa): void{
