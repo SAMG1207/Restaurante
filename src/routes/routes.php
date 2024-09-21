@@ -6,7 +6,7 @@ declare(strict_types=1);
 use App\Controllers\ProductosController;
 use App\Controllers\ServiciosController;
 use App\Controllers\PedidoController;
-
+use App\Helpers\Helper;
 $productoController = new ProductosController();
 $serviciosController = new  ServiciosController();
 $pedidoController = new PedidoController();
@@ -44,9 +44,8 @@ $routes = [
             $data = json_decode(file_get_contents("php://input"), true);
             $serviciosController->abrirServicioController($data);  
         }else {
-            // Si no es POST, responde con un error 405: Método no permitido
-            http_response_code(405); // Código 405: Método no permitido
-            echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+            Helper::response(405, 'error', 'Metodo no permitido');
+
         }
     },
 
@@ -56,8 +55,7 @@ $routes = [
             $serviciosController->cerrarServicioController($data);
             
         }else{
-            http_response_code(405); // Código 405: Método no permitido
-            echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+            Helper::response(405, 'error', 'Metodo no permitido');
         }
         
     },
@@ -69,9 +67,7 @@ $routes = [
             $data = json_decode(file_get_contents('php://input'), true);
             $pedidoController->hacerPedido($data);   
         } else {
-        // Responde con un error 405 si el método HTTP no es POST
-        http_response_code(405); // Código 405: Método no permitido
-        echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+            Helper::response(405, 'error', 'Metodo no permitido');
     }
     },
 
@@ -80,9 +76,7 @@ $routes = [
          $data = json_decode(file_get_contents('php://input'), true);
          $pedidoController->elminarPedido($data);
     }else {
-        // Responde con un error 405 si el método HTTP no es DELETE
-        http_response_code(405); // Código 405: Método no permitido
-        echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
+        Helper::response(405, 'error', 'Metodo no permitido');
     }
     },
 
