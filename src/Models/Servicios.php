@@ -14,37 +14,28 @@ Class Servicios extends BaseModel{
     }
     
     public function seleccionaUnaMesaAbierta($id_servicio){
-        try{
+        
             $sql = "SELECT * FROM servicios WHERE id_servicio = ? and hora_salida IS NULL";
             $stmt= $this->conn->prepare($sql);
             $stmt->bindParam(1, $id_servicio, PDO::PARAM_INT);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return $result ?: false;
-        }catch(PDOException $e){
-            echo ($e->getMessage());
-            return false;
-        }
-        
-    }
+        } 
+    
 
     public function abrirServicio(int $mesa) {
         try {
             // Verifica si la mesa ya está abierta
             if (!$this->mesaAbierta($mesa)) {
-                // Inicia una transacción
-                $this->conn->beginTransaction();
-    
-                // Insertar el nuevo servicio
-                $sql = "INSERT INTO servicios (mesa, hora_entrada, hora_salida, total_gastado) VALUES (?, NOW(), NULL, NULL)";
+                 $sql = "INSERT INTO servicios (mesa, hora_entrada, hora_salida, total_gastado) VALUES (?, NOW(), NULL, NULL)";
                 $stmt = $this->conn->prepare($sql);
                 $stmt->bindParam(1, $mesa, PDO::PARAM_INT);
                 $stmt->execute();
-                $this->conn->commit();
                 //return $this->conn->lastInsertId(); 
                 return $this->mesaAbierta($mesa);
                }else{
-  // Si la mesa ya está abierta, devolver falso o algún indicativo
+
                   return false;
             }
 
@@ -69,28 +60,17 @@ Class Servicios extends BaseModel{
     
 
     public function cerrarMesa(int $mesa): bool {
-        try {
+        
             $idServicio = $this->mesaAbierta($mesa);
             if ($idServicio) {
-                $this->conn->beginTransaction();
-
-                // Actualizar la hora de salida
                 $sql = "UPDATE servicios SET hora_salida = NOW() WHERE id_servicio = ?";
                 $stmt = $this->conn->prepare($sql);
                 $stmt->bindParam(1, $idServicio, PDO::PARAM_INT);
                 $stmt->execute();
-                $this->conn->commit();
                 return true;
             }
             return false;
-        } catch (Exception $e) {
-            // Revertir la transacción en caso de error
-            if ($this->conn->inTransaction()) {
-                $this->conn->rollBack();
-            }
-            error_log("Error al cerrar mesa: " . $e->getMessage());
-            return false;
-        }
+        
     }
     /**
      * FALTA HACER LA FUNCION PARA QUE CADA VEZ QUE SE HAGA UN PEDIDO EL PRECIO DE ESTE SE SUME A LA CUENTA
