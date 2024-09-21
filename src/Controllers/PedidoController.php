@@ -4,10 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\Pedido;
-use CachingIterator;
-use Exception;
-use InvalidArgumentException;
-
+use App\Helpers\Helper;
 
 class PedidoController{
     private Pedido $pedidoController;
@@ -17,6 +14,24 @@ class PedidoController{
     }
     
  
+ 
+    public function hacerPedido($data){
+        if (
+        filter_var($data['mesa'], FILTER_VALIDATE_INT) === false ||
+        filter_var($data['id_producto'], FILTER_VALIDATE_INT) === false ||
+        filter_var($data['cantidad'], FILTER_VALIDATE_INT) === false
+    ){
+        Helper::response(400, 'error', 'error en los argumentos');
+    }else{
+        $mesa = (int)$data['mesa'];
+        $id_producto = (int)$data['id_producto'];
+        $cantidad = (int)$data['cantidad'];
+         $this->pedidoController->insertPedido($mesa, $id_producto, $cantidad);
+         Helper::response(201, 'exitoso', 'Pedido hecho correctamente');
+    }
+}
+     
+    /*
     public function hacerPedido($data){
         try{
             header('Content-Type: application/json');
@@ -63,8 +78,24 @@ class PedidoController{
             ]);
         }
      
-    }
+    }*/
+
     public function elminarPedido($data){
+        if (
+        filter_var($data['mesa'], FILTER_VALIDATE_INT) === false ||
+        filter_var($data['id_producto'], FILTER_VALIDATE_INT) === false ||
+        filter_var($data['cantidad'], FILTER_VALIDATE_INT) === false
+    ){
+        Helper::response(400, 'error', 'error en los argumentos');
+    }else{
+        $mesa = (int)$data['mesa'];
+        $id_producto = (int)$data['id_producto'];
+        $cantidad = (int)$data['cantidad'];
+         $this->pedidoController->borrarPedido($mesa, $id_producto, $cantidad);
+         Helper::response(200, 'exitoso', 'Pedido eliminado correctamente');
+    }
+}
+    /*public function elminarPedido($data){
         
             try{
                 header('Content-Type: application/json');
@@ -104,31 +135,22 @@ class PedidoController{
                     'error'=>'ha habido un error en los argumentos'
                 ]);
             }
-        }
+        }*/
         
 
-    public function verProductos (int $mesa){
-        header('Content-Type: application/json');
-        if(filter_var($mesa, FILTER_VALIDATE_INT)){
-            $productos = $this->pedidoController->pedidosExistentes($mesa);
-            if($productos){
-                http_response_code(201);
-                echo json_encode([
-                   "status"=>"exitoso",
-                   "productos"=>$productos
-                ]);
-            }else{
-                http_response_code(400);
-                echo json_encode([
-                    'error'=>'ha habido un error'
-                ]);
+        public function verProductos(int $mesa) {
+            
+        
+            if (filter_var($mesa, FILTER_VALIDATE_INT) !== false) {
+                $productos = $this->pedidoController->pedidosExistentes($mesa);
+                if ($productos) {
+                    Helper::response(200, "Exitoso", $productos); // Changed status code to 200
+                } else {
+                    Helper::response(404, "Error", "No se encontraron productos para la mesa especificada.");
+                }
+            } else {
+                Helper::response(400, "Error", "El valor de la mesa no es válido.");
             }
-        }else{
-            http_response_code(400);
-            echo json_encode([
-                'error'=>'ha habido un error'
-            ]);
         }
-       
     }
-}
+        
