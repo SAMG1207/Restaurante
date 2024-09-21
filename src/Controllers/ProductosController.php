@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Productos;
 use Exception;
-
+use App\Helpers\Helper;
 Class ProductosController{
     private Productos $productosController;
 
@@ -13,57 +13,38 @@ Class ProductosController{
     }
 
     public function verTodosLosProductosPorTipo(string $tipo): void {
-        try {
-            $infoProductos = $this->productosController->selectPorTipo($tipo);
-            header('Content-Type: application/json');
-            if (empty($infoProductos)) {
-                http_response_code(404); // No encontrado
-                echo json_encode(['error' => "No se encontraron productos de tipo $tipo."]);
-                return;
-            }
-            http_response_code(200); // Éxito
-            echo json_encode($infoProductos);
-        } catch (Exception $e) {
-            http_response_code(500); // Error del servidor
-            echo json_encode(['error' => 'Ocurrió un error: ' . $e->getMessage()]);
+        $tiposPermitidos = ['pizza', 'bebidas', 'cafe'];
+        if(in_array($tipo, $tiposPermitidos)){
+            $infoProductos=$this->productosController->selectPorTipo($tipo);
+            Helper::response(200, "exito", $infoProductos);
+        }else{
+            Helper::response(404, "error", "no se han encontrado estos productos");
         }
     }
 
     public function selectProductos(){
-        try{
-            $infoProducto = $this->productosController->selectProductos();
-            header('Content-Type: application/json');
-            if(empty($infoProducto)){
-                http_response_code(404); // No encontrado
-                echo json_encode(['error' => 'Productos no encontrados']);
-                return;
-            }
-            http_response_code(200); // Éxito
-            echo json_encode($infoProducto);
-        }catch(Exception $e){
-            http_response_code(500); // Error del servidor
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Ocurrió un error: ' . $e->getMessage()]);
-        }
+        $infoProducto = $this->productosController->selectProductos();
+         if($infoProducto){
+            Helper::response(200, "exito", $infoProducto);
+         }else if(empty($infoProducto)){
+            Helper::response(400, "error", "no hay productos");
+         }
     }
 
     public function selectUnProducto(int $id_producto){
-        try{
+        if(filter_var($id_producto, FILTER_VALIDATE_INT)){
             $infoProducto = $this->productosController->selectUnProducto($id_producto);
-            header('Content-Type: application/json');
             if(empty($infoProducto)){
-                http_response_code(404); // No encontrado
-                echo json_encode(['error' => 'Producto no encontrado']);
+                Helper::response(404, "error", "producto no encontrado");
                 return;
             }
-            http_response_code(200); // Éxito
-            echo json_encode($infoProducto);
-        }catch(Exception $e){
-            http_response_code(500); // Error del servidor
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Ocurrió un error: ' . $e->getMessage()]);
+            Helper::response(200, "exito", $infoProducto);
+        }else{
+            Helper::response(400, "error", "valor no numérico");
+            
         }
     }
+  
 
- 
+
 }

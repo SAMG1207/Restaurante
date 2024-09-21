@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Models\Servicios;
 use Exception;
 use InvalidArgumentException;
-
+use App\Helpers\Helper;
 Class ServiciosController{
     private Servicios $serviciosController ;
 
@@ -25,72 +25,28 @@ Class ServiciosController{
         return $mesa;
     }
     public function abrirServicioController($data){
-        try{
-            header('Content-Type: application/json');
-                $mesa =$this->validarMesa($data); 
-                $idServicio = $this->serviciosController->abrirServicio($mesa);
-                if($idServicio){
-                    http_response_code(201);
-                    echo json_encode([
-                        'status'=>'exitoso',
-                        'message' => 'Mesa abierta correctamente',
-                        'id_servicio' => $idServicio
-                        ]);
-                }else{
-                    http_response_code(400);
-                    echo json_encode([
-                        'error'=>'mesa ya estaba abierta'
-                    ]);
-                }
-            }catch(InvalidArgumentException $e){
-            error_log("Invalid Argument Exception: " . $e->getMessage());
-            http_response_code(400);
-            echo json_encode([
-                 'status' => 'error',
-                'message' => $e->getMessage() ]);
-            } catch(Exception $e){
-                error_log("Invalid Argument Exception: " . $e->getMessage());
-                http_response_code(500);
-              echo json_encode([
-             'status' => 'error',
-              'message' => 'Error en el servidor: ' . $e->getMessage()]);
-            } 
+        $mesa =$this->validarMesa($data); 
+        $idServicio = $this->serviciosController->abrirServicio($mesa);
+        if($idServicio){
+            Helper::response(201, "id_servicio", "$idServicio");
+            return;
+        }else{
+            Helper::response(400, "error", "no se ha podido abrir la mesa");
+        } 
     }
 
-       
-
+    
        public function cerrarServicioController( $data){
-          try{
-            header('Content-Type: application/json');
-            $mesa = $this->validarMesa($data);
+        $mesa = $this->validarMesa($data);
             $servicio = $this->serviciosController->cerrarMesa($mesa);
                 if($servicio){
-                    http_response_code(201);
-                    echo json_encode([
-                        'status'=>'exitoso',
-                        'message' => 'Mesa Cerrada correctamente'
-                        ]);
+                    Helper::response(201, 'exitoso', 'mesa cerrada');
                 }else{
-                    http_response_code(400);
-                    echo json_encode([
-                        'error'=>'mesa no abierta'
-                    ]);
-                }
-          }catch(InvalidArgumentException $e){
-            http_response_code(400);
-            echo json_encode([
-                 'status' => 'error',
-                'message' => $e->getMessage() ]);
-            } catch(Exception $e){
-                http_response_code(500);
-            echo json_encode([
-             'status' => 'error',
-              'message' => 'Error en el servidor: ' . $e->getMessage()]);
-            } 
+                    Helper::response(400, 'error', 'No se ha podido cerrar la mesa');
+                } 
          }
        
             
-     
 
         public function verServicio ( int $mesa): void{
             
