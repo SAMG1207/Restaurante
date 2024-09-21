@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace App\Models;
 use PDO;
+use Exception;
 use App\Models\Productos;
 use App\Models\Servicios;
 
@@ -39,19 +40,27 @@ Class Pedido extends BaseModel{
         $id_servicio = $this->servicio->mesaAbierta($mesa);
         if($productoExiste && $id_servicio){
             $precioProducto = number_format(floatval($productoExiste["precio"]),2,".","");
+            $this->conn->beginTransaction();
             for($i = 0; $i < $cantidad; $i++){
+                
                 $sql="INSERT INTO pedidos (id_servicio, id_producto, totalPrecio) VALUES (?,?,?)";
                 $stmt = $this->conn->prepare($sql);
                 $stmt->bindParam(1,$id_servicio, PDO::PARAM_INT);
                 $stmt->bindParam(2, $id_producto, PDO::PARAM_INT);
                 $stmt->bindParam(3, $precioProducto, PDO::PARAM_STR);
                 $stmt->execute();
-            }return true;
+                
+            }
+            $this->conn->commit();
+            return true;
         }else{
-           return false;
-        }
+            if($this->conn->inTransaction()){
+                $this->conn->rollBack();
+                return false;
+            } 
+            return false;
+        }   
     }
-
 
     public function borrarPedido (int $mesa, int $id_producto , int $cantidad){
         $productoExiste = $this->productos->selectUnProducto($id_producto);
@@ -65,12 +74,13 @@ Class Pedido extends BaseModel{
            $idsAEliminar = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
            if($idsAEliminar){
             $idsAEliminarList = implode(',',array_map('intval', $idsAEliminar));
-             $query = "DELETE FROM pedidos WHERE id_pedido IN ($idsAEliminarList)";
-             $stmtN = $this->conn->prepare($query);
-             $stmtN->execute();
-                
+            
+                $query = "DELETE FROM pedidos WHERE id_pedido IN ($idsAEliminarList)";
+                $stmtN = $this->conn->prepare($query);
+                $stmtN->execute();
+                $this->conn->commit();
                 return true;
-           }
+            }
            return false;
         }
         return false;
