@@ -1,0 +1,5 @@
+
+2024-09-21 11:53:01Error: [2] Undefined variable $undefined - C:\xampp\htdocs\restaurante\index.php: 48 
+
+- 2024-09-21 11:58:01Error: [2] Undefined variable $undefined - C:\xampp\htdocs\restaurante\index.php: 48 
+- 2024-09-21 11:59:04 Uncaught Exception: Division by zero in C:\xampp\htdocs\restaurante\index.php on line: 48

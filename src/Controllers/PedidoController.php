@@ -6,6 +6,8 @@ namespace App\Controllers;
 use App\Models\Pedido;
 use CachingIterator;
 use Exception;
+use InvalidArgumentException;
+
 
 class PedidoController{
     private Pedido $pedidoController;
@@ -13,7 +15,8 @@ class PedidoController{
     public function __construct(){
         $this->pedidoController = new Pedido();
     }
-
+    
+ 
     public function hacerPedido($data){
         try{
             header('Content-Type: application/json');
@@ -40,6 +43,8 @@ class PedidoController{
                     ]);
                     
                 }
+            }else{
+                throw new InvalidArgumentException("Argumentos equivocados");
             }
             
         }catch(Exception $e){
@@ -50,6 +55,11 @@ class PedidoController{
             echo json_encode([
                 'status' => 'error',
                 'message' => 'Error interno en el servidor'
+            ]);
+        }catch(InvalidArgumentException $e){
+            http_response_code(400);
+            echo json_encode([
+                'error'=>'ha habido un error en los argumentos'
             ]);
         }
      
@@ -74,20 +84,25 @@ class PedidoController{
                             'status' => 'exitoso',
                             'message' => 'Pedido eliminado correctamente'
                         ]);
-                    }
+                    }else{
+                        http_response_code(400);
+                        echo json_encode([
+                            'error'=>'ha habido un error'
+                        ]);}
                 }else{
-                    http_response_code(400);
-                    echo json_encode([
-                        'error'=>'ha habido un error'
-                    ]);
+                    throw new InvalidArgumentException("Argumentos equivocados");
                 }
 
             }catch(Exception $e){
                 http_response_code(500);
                 echo json_encode([
             'status' => 'error',
-            'message' => 'Error en el servidor: ' . $e->getMessage()
-        ]);
+            'message' => 'Error en el servidor: ' . $e->getMessage() ]);
+            }catch(InvalidArgumentException $e){
+                http_response_code(400);
+                echo json_encode([
+                    'error'=>'ha habido un error en los argumentos'
+                ]);
             }
         }
         

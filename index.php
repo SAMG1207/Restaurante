@@ -2,17 +2,18 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT");
+require_once __DIR__.'/src/core/error_handler.php';
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/src/routes/routes.php';
 
 // Obtener la URI solicitada
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-var_dump('Request URI: URL QUE ENTRA', $requestUri);
+//var_dump('Request URI: URL QUE ENTRA', $requestUri);
 // Eliminar la parte de la base '/restaurante' de la URI
 $requestUri = str_replace('/restaurante', '', $requestUri);
 
 // Depurar la URI solicitada
-var_dump('Request URI:', $requestUri);
+//var_dump('Request URI:', $requestUri);
 
 // Verificar si la URL coincide con alguna de las rutas definidas
 $routeFound = false;
