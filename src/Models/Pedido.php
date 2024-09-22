@@ -88,35 +88,24 @@ Class Pedido extends BaseModel{
            if($idsAEliminar){
             $this->conn->beginTransaction();
             $idsAEliminarList = implode(',',array_map('intval', $idsAEliminar));
-                $valorARestarQuery = "SELECT SUM(totalPrecio) as totalSumar FROM pedidos WHERE id_pedido IN ($idsAEliminarList)";
-                $stmtSumar = $this->conn->prepare($valorARestarQuery);
-                $stmtSumar->execute();
-                $result = $stmtSumar->fetch(PDO::FETCH_ASSOC);
-                if($result && isset($result['totalSumar'])){
-                    $valorARestar = $result['totalSumar'];
-                    if(!$this->deleteProduct($idsAEliminarList)){
-                        $this->conn->rollBack();
-                        return false;
-                    }
-                    if(!$this->sumPrecio( $id_servicio)){
-                        $this->conn->rollBack();
-                        return false;
-                    };
-                   
-                    
-                    $this->conn->commit();
-                    return true;
-                }else{
-                    $this->conn->rollBack();
-                    return false;
-                }
-          
+            if(!$this->deleteProduct($idsAEliminarList)){
+                $this->conn->rollBack();
+                return false;
             }
-           
-           return false;
+            if(!$this->sumPrecio( $id_servicio)){
+                $this->conn->rollBack();
+                return false;
+            };
+            $this->conn->commit();
+            return true;
+        }else{
+             return false;
+            }
         }
         return false;
     }
+           
+      
 
     private function selectIdsProductos(int $id_servicio, int $id_producto,int $cantidad){
         $sql = "SELECT id_pedido FROM pedidos WHERE id_servicio = ? AND id_producto = ? LIMIT ".intval($cantidad);
