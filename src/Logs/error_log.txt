@@ -1,8 +1,1 @@
 
-2024-09-21 11:53:01Error: [2] Undefined variable $undefined - C:\xampp\htdocs\restaurante\index.php: 48 
-
-- 2024-09-21 11:58:01Error: [2] Undefined variable $undefined - C:\xampp\htdocs\restaurante\index.php: 48 
-- 2024-09-21 11:59:04 Uncaught Exception: Division by zero in C:\xampp\htdocs\restaurante\index.php on line: 48
-- 2024-09-21 14:16:37 Uncaught Exception: App\Models\Servicios::abrirServicio(): Argument #1 ($mesa) must be of type int, string given, called in C:\xampp\htdocs\restaurante\src\Controllers\ServiciosController.php on line 31 in C:\xampp\htdocs\restaurante\src\Models\Servicios.php on line: 31
-- 2024-09-21 15:03:16 Uncaught Exception: Class "App\Helpers\Helper" not found in C:\xampp\htdocs\restaurante\src\Controllers\PedidoController.php on line: 24
-- 2024-09-21 15:06:03 Uncaught Exception: Class "App\Helpers\Helper" not found in C:\xampp\htdocs\restaurante\src\Controllers\PedidoController.php on line: 24

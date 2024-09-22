@@ -42,13 +42,15 @@ Class Pedido extends BaseModel{
             $precioProducto = number_format(floatval($productoExiste["precio"]),2,".","");
             $this->conn->beginTransaction();
             for($i = 0; $i < $cantidad; $i++){
-                
-                $sql="INSERT INTO pedidos (id_servicio, id_producto, totalPrecio) VALUES (?,?,?)";
-                $stmt = $this->conn->prepare($sql);
-                $stmt->bindParam(1,$id_servicio, PDO::PARAM_INT);
-                $stmt->bindParam(2, $id_producto, PDO::PARAM_INT);
-                $stmt->bindParam(3, $precioProducto, PDO::PARAM_STR);
-                $stmt->execute();
+                if(!$this->insertInPedidos($id_servicio, $id_producto, $precioProducto)){
+                    $this->conn->rollBack();
+                    return false;
+                }
+
+             if(!$this->sumPrecio($id_servicio)){
+                $this->conn->rollBack();
+                    return false;
+             }
                 
             }
             $this->conn->commit();
@@ -61,29 +63,85 @@ Class Pedido extends BaseModel{
             return false;
         }   
     }
-
+     
+    private function selectTotalGastado(int $id_servicio){
+        $sql = "SELECT SUM(totalPrecio) as totalGastado FROM pedidos WHERE id_servicio = ?";
+        $stmt=$this->conn->prepare($sql);
+        $stmt->bindParam(1, $id_servicio);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result['totalGastado']!==null? floatval($result['totalGastado']):0.0;
+    }
+    private function insertInPedidos($id_servicio, $id_producto, $precio){
+        $sql="INSERT INTO pedidos (id_servicio, id_producto, totalPrecio) VALUES (?,?,?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(1,$id_servicio, PDO::PARAM_INT);
+        $stmt->bindParam(2, $id_producto, PDO::PARAM_INT);
+        $stmt->bindParam(3, $precio, PDO::PARAM_STR);
+        return $stmt->execute();
+    }
     public function borrarPedido (int $mesa, int $id_producto , int $cantidad){
         $productoExiste = $this->productos->selectUnProducto($id_producto);
         $id_servicio = $this->servicio->mesaAbierta($mesa);
         if($productoExiste && $id_servicio){
-           $sql = "SELECT id_pedido FROM pedidos WHERE id_servicio = ? AND id_producto = ? LIMIT ".intval($cantidad);
-           $stmt = $this->conn->prepare($sql);
-           $stmt->bindParam(1, $id_servicio, PDO::PARAM_INT);
-           $stmt->bindParam(2, $id_producto, PDO::PARAM_INT);
-           $stmt->execute();
-           $idsAEliminar = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+           $idsAEliminar = $this->selectIdsProductos($id_servicio, $id_producto, $cantidad);
            if($idsAEliminar){
+            $this->conn->beginTransaction();
             $idsAEliminarList = implode(',',array_map('intval', $idsAEliminar));
-            
-                $query = "DELETE FROM pedidos WHERE id_pedido IN ($idsAEliminarList)";
-                $stmtN = $this->conn->prepare($query);
-                $stmtN->execute();
-                $this->conn->commit();
-                return true;
+                $valorARestarQuery = "SELECT SUM(totalPrecio) as totalSumar FROM pedidos WHERE id_pedido IN ($idsAEliminarList)";
+                $stmtSumar = $this->conn->prepare($valorARestarQuery);
+                $stmtSumar->execute();
+                $result = $stmtSumar->fetch(PDO::FETCH_ASSOC);
+                if($result && isset($result['totalSumar'])){
+                    $valorARestar = $result['totalSumar'];
+                    if(!$this->deleteProduct($idsAEliminarList)){
+                        $this->conn->rollBack();
+                        return false;
+                    }
+                    if(!$this->sumPrecio( $id_servicio)){
+                        $this->conn->rollBack();
+                        return false;
+                    };
+                   
+                    
+                    $this->conn->commit();
+                    return true;
+                }else{
+                    $this->conn->rollBack();
+                    return false;
+                }
+          
             }
+           
            return false;
         }
         return false;
+    }
+
+    private function selectIdsProductos(int $id_servicio, int $id_producto,int $cantidad){
+        $sql = "SELECT id_pedido FROM pedidos WHERE id_servicio = ? AND id_producto = ? LIMIT ".intval($cantidad);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(1, $id_servicio, PDO::PARAM_INT);
+        $stmt->bindParam(2, $id_producto, PDO::PARAM_INT);
+        $stmt->execute();
+        $idsAEliminar = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        return $idsAEliminar;
+    }
+
+    private function sumPrecio( int $id_servicio ){
+        $total = $this->selectTotalGastado($id_servicio);
+        $sql = "UPDATE servicios SET total_gastado = ? WHERE id_servicio = ?";
+        $stmtSql = $this->conn->prepare($sql);
+        $stmtSql->bindParam(1, $total);
+        $stmtSql->bindParam(2, $id_servicio);
+        return $stmtSql->execute();
+        
+    }
+
+    private function deleteProduct($list){
+        $query = "DELETE FROM pedidos WHERE id_pedido IN ($list)";
+        $stmtN = $this->conn->prepare($query);
+        return $stmtN->execute();
     }
 }
 
