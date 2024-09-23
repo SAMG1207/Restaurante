@@ -2,7 +2,7 @@
 
 namespace App\Models;
 use PDO;
-use App\Config\Database;
+use App\Database\Database;
 
 abstract class BaseModel{
     protected PDO $conn;

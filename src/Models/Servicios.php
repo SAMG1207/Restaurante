@@ -72,37 +72,5 @@ Class Servicios extends BaseModel{
             return false;
         
     }
-    /**
-     * FALTA HACER LA FUNCION PARA QUE CADA VEZ QUE SE HAGA UN PEDIDO EL PRECIO DE ESTE SE SUME A LA CUENTA
-     * SE PUEDE HACER COMO PROCEDIMIENTO SQL
-     * DELIMITER //
-        CREATE TRIGGER after_insert_pedido
-         AFTER INSERT ON pedidos
-       FOR EACH ROW
-         BEGIN
-    -- Declara una variable para almacenar el total actual
-    DECLARE totalAcumulado DECIMAL(10,2);
 
-    -- Obtén el total acumulado de la mesa
-    SELECT SUM(totalPrecio) INTO totalAcumulado
-    FROM pedidos
-    WHERE id_servicio = NEW.id_servicio;
-
-    -- Actualiza la columna total_gastado en la tabla servicios
-    UPDATE servicios
-    SET total_gastado = totalAcumulado
-    WHERE id_servicio = NEW.id_servicio;
-END;
-//
-DELIMITER ;
-     * 
-     * 
-     * 
-     * TAMBIEN PARA CUANDO SE ELIMINAN PEDIDOS 
-     * BEGIN
-    UPDATE servicios
-    SET total_gastado = total_gastado - OLD.totalPrecio
-    WHERE id_servicio = OLD.id_servicio;
-END
-     */
 }

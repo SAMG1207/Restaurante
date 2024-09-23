@@ -8,30 +8,24 @@ use App\Models\Servicios;
 
 
 Class Pedido extends BaseModel{
-    private Productos $productos;
-    private Servicios $servicio;
-
-    public function __construct(){
+    public function __construct(private Productos $productos, private Servicios $servicio){
         parent::__construct();
-        $this->productos = new Productos();
-        $this->servicio = new Servicios();
     }
 
     public function pedidosExistentes($mesa){
       $id_servicio = $this->servicio->mesaAbierta($mesa);
-        if(is_int($id_servicio) ){
-            $sql = "SELECT pr.nombre as product, SUM(pe.totalPrecio) as total_producto 
-            FROM pedidos pe INNER JOIN productos pr ON pe.id_producto = pr.id_producto
-            WHERE pe.id_servicio = ?
-            GROUP BY pr.nombre ";
-            $stmt= $this->conn->prepare($sql);
-            $stmt->bindParam(1, $id_servicio);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC)?:false;
-
-        }else{
+        if(!$id_servicio){
             return false;
         }
+        $sql = "SELECT pr.nombre as product, SUM(pe.totalPrecio) as total_producto 
+        FROM pedidos pe INNER JOIN productos pr ON pe.id_producto = pr.id_producto
+        WHERE pe.id_servicio = ?
+        GROUP BY pr.nombre ";
+        $stmt= $this->conn->prepare($sql);
+        $stmt->bindParam(1, $id_servicio);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC)?:false;
+        
     }
   
     public function insertPedido(int $mesa, int $id_producto, int $cantidad = 1){

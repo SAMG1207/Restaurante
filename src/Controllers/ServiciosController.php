@@ -7,10 +7,10 @@ use Exception;
 use InvalidArgumentException;
 use App\Helpers\Helper;
 Class ServiciosController{
-    private Servicios $serviciosController ;
 
-    public function __construct(){
-          $this->serviciosController = new Servicios();
+
+    public function __construct( private Servicios $servicio){
+          
     }
    
 
@@ -26,7 +26,7 @@ Class ServiciosController{
     }
     public function abrirServicioController($data){
         $mesa =$this->validarMesa($data); 
-        $idServicio = $this->serviciosController->abrirServicio($mesa);
+        $idServicio = $this->servicio->abrirServicio($mesa);
         if($idServicio){
             Helper::response(201, "id_servicio", "$idServicio");
             return;
@@ -38,7 +38,7 @@ Class ServiciosController{
     
        public function cerrarServicioController( $data){
         $mesa = $this->validarMesa($data);
-            $servicio = $this->serviciosController->cerrarMesa($mesa);
+            $servicio = $this->servicio->cerrarMesa($mesa);
                 if($servicio){
                     Helper::response(201, 'exitoso', 'mesa cerrada');
                 }else{
@@ -50,22 +50,19 @@ Class ServiciosController{
 
         public function verServicio ( int $mesa): void{
             
-            $mesaAbierta = $this->serviciosController->seleccionaUnaMesaAbierta($this->serviciosController->mesaAbierta($mesa));   
+            $mesaAbierta = $this->servicio->seleccionaUnaMesaAbierta($this->servicio->mesaAbierta($mesa));   
             if($mesaAbierta){
-                http_response_code(201);
+                http_response_code(200);
                 echo json_encode([
                     'status' => 'exitoso',
                     'elementos'=>[
                         'id_servicio'=>$mesaAbierta['id_servicio'],
-                        'hora_entrada'=>$mesaAbierta['hora_abierta'],
+                        'hora_entrada'=>$mesaAbierta['hora_entrada'],
                         'total_gastado'=>$mesaAbierta['total_gastado']
                     ]
                     ]);
             }else{
-                http_response_code(400);
-                echo json_encode([
-                    'error'=>'mesa no se ha podido cerrar'
-                ]);
+               Helper::response(400, "error", "No se ha completado la operacion");
             }
         }
     }
