@@ -1,106 +1,78 @@
-<?php 
-
+<?php
 declare(strict_types=1);
 
-
+use Phroute\Phroute\RouteCollector;
 use App\Controllers\ProductosController;
 use App\Controllers\ServiciosController;
 use App\Controllers\PedidoController;
-use App\Helpers\Helper;
+
 use App\Models\Pedido;
 use App\Models\Productos;
 use App\Models\Servicios;
+
 $servicio = new Servicios;
 $producto = new Productos;
 $pedido = new Pedido($producto, $servicio);
 $productoController = new ProductosController($producto);
-$serviciosController = new  ServiciosController($servicio);
+$serviciosController = new ServiciosController($servicio);
 $pedidoController = new PedidoController($pedido);
 
-$routes = [
-    '/productos' => function() use ($productoController):void{
-        $productoController->selectProductos();
-    },
+$router = new RouteCollector();
 
-    '/productos/{id}' => function($id) use ($productoController):void{
-        $productoController->selectUnProducto((int) $id);
-    },
+// Ruta para obtener todos los productos
+$router->get('/productos', function() use ($productoController) {
+    return $productoController->selectProductos();
+});
 
+// Ruta para obtener un producto por su ID
+$router->get('/productos/{id:\d+}', function($id) use ($productoController) {
+    return $productoController->selectUnProducto((int)$id);
+});
 
-    '/pizzas' => function() use ($productoController) {
-        $productoController->verTodosLosProductosPorTipo('pizza');
-    },
+$router->get('/pizzas', function() use ($productoController){
+    return $productoController->verTodosLosProductosPorTipo('pizza');
+});
 
+$router->get('bebidas', function() use ($productoController){
+    return $productoController->verTodosLosProductosPorTipo('bebida');
+});
 
-    '/bebidas' => function() use ($productoController) {
-        $productoController->verTodosLosProductosPorTipo('bebida');
-    },
+$router->get('cafes', function() use ($productoController){
+    return $productoController->verTodosLosProductosPorTipo('cafe');
+});
 
-    '/cafes' => function() use ($productoController) {
-        $productoController->verTodosLosProductosPorTipo('cafe');
-    },
+$router->post('/openservice' , function() use($serviciosController){
+    $data = json_decode(file_get_contents("php://input"), true);
+    return $serviciosController->abrirServicioController($data);
+});
 
-    '/test' => function():void {
-        require_once __DIR__ . '/../../public/test.php';
+$router->post('/closeservice', function() use($serviciosController){
+    $data = json_decode(file_get_contents('php://input'), true);
+    return $serviciosController->cerrarServicioController($data);
+});
 
-    },
+$router->post('/addproduct', function() use($pedidoController){
+    $data = json_decode(file_get_contents('php://input'), true);
+    $myDTO = new \App\Helpers\MyDTO(
+        (int)$data['mesa'],
+        (int)$data['id_producto'],
+        (int)$data['cantidad']
+    );
+    return $pedidoController->hacerPedido($myDTO);
+});
 
-    '/openservice' =>function() use ($serviciosController){
-        if($_SERVER['REQUEST_METHOD'] ==='POST'){
-            $data = json_decode(file_get_contents("php://input"), true);
-            $serviciosController->abrirServicioController($data);  
-        }else {
-            Helper::response(405, 'error', 'Metodo no permitido');
+$router->delete('/deleteproduct', function() use($pedidoController){
+    $data = json_decode(file_get_contents('php://input'), true);
+    $myDTO = new \App\Helpers\MyDTO(
+        (int)$data['mesa'],
+        (int)$data['id_producto'],
+        (int)$data['cantidad']
+    );
+    return $pedidoController->eliminarPedido($myDTO); 
+});
 
-        }
-    },
-
-    '/closeservice'=>function() use($serviciosController){
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $data = json_decode(file_get_contents('php://input'), true);
-            $serviciosController->cerrarServicioController($data);
-            
-        }else{
-            Helper::response(405, 'error', 'Metodo no permitido');
-        }
-        
-    },
-
-    '/addproduct' => function() use ($pedidoController) {
-    // Asegúrate de que el método HTTP es POST
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        
-            // Decodifica el JSON de la solicitud
-            $data = json_decode(file_get_contents('php://input'), true);
-            $myDTO = new \App\Helpers\MyDTO(
-                (int)$data['mesa'],
-                (int)$data['id_producto'],
-                (int)$data['cantidad']
-            );
-            $pedidoController->hacerPedido($myDTO);   
-        } else {
-            Helper::response(405, 'error', 'Metodo no permitido');
-    }
-    },
-
-    '/deleteproduct' => function() use($pedidoController){
-    if($_SERVER["REQUEST_METHOD"] === "DELETE"){
-         $data = json_decode(file_get_contents('php://input'), true);
-         $myDTO = new \App\Helpers\MyDTO(
-            (int)$data['mesa'],
-            (int)$data['id_producto'],
-            (int)$data['cantidad']
-        );
-         $pedidoController->eliminarPedido($myDTO);
-    }else {
-        Helper::response(405, 'error', 'Metodo no permitido');
-    }
-    },
-
-    '/verproductos/{mesa}' => function($mesa) use($pedidoController){
-        $pedidoController->verProductos((int)$mesa);
-    }
+$router->get('/verproductos/{mesa:\d+}', function($mesa) use($pedidoController){
+    return $pedidoController->verProductos((int)$mesa);
+});
 
 
-
-];
