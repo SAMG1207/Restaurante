@@ -7,7 +7,7 @@ require_once __DIR__.'/src/core/error_handler.php';
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/src/routes/routes.php';
 
-use App\Helpers\Helper;
+use App\Helpers\Responser;
 use Phroute\Phroute\Dispatcher;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
@@ -21,7 +21,7 @@ try {
     $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $requestUri);
     echo $response;
 } catch (HttpRouteNotFoundException $e) {
-    Helper::response(404, "error", "Route not found");
+    Responser::response(404,  "Route not found");
 } catch (HttpMethodNotAllowedException $e) {
-    Helper::response(405, "error", "Method not allowed");
+    Responser::response(405,  "Method not allowed");
 }

@@ -3,8 +3,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\Productos;
-use Exception;
-use App\Helpers\Helper;
+use App\Helpers\Responser;
 Class ProductosController{
 
     public function __construct(private Productos $producto){
@@ -14,31 +13,31 @@ Class ProductosController{
         $tiposPermitidos = ['pizza', 'bebidas', 'cafe'];
         if(in_array($tipo, $tiposPermitidos)){
             $infoProductos=$this->producto->selectPorTipo($tipo);
-            Helper::response(200, "exito", $infoProductos);
+            Responser::response(200,  $infoProductos);
         }else{
-            Helper::response(404, "error", "no se han encontrado estos productos");
+            Responser::response(404,  "no se han encontrado estos productos");
         }
     }
 
-    public function selectProductos(){
+    public function selectProductos():void{
         $infoProducto = $this->producto->selectProductos();
          if($infoProducto){
-            Helper::response(200, "exito", $infoProducto);
+            Responser::response(200,  $infoProducto);
          }else if(empty($infoProducto)){
-            Helper::response(400, "error", "no hay productos");
+            Responser::response(400,  "no hay productos");
          }
     }
 
-    public function selectUnProducto(int $id_producto){
+    public function selectUnProducto(int $id_producto):void{
         if(filter_var($id_producto, FILTER_VALIDATE_INT)){
             $infoProducto = $this->producto->selectUnProducto($id_producto);
             if(empty($infoProducto)){
-                Helper::response(404, "error", "producto no encontrado");
+                Responser::response(404,  "producto no encontrado");
                 return;
             }
-            Helper::response(200, "exito", $infoProducto);
+            Responser::response(200,  $infoProducto);
         }else{
-            Helper::response(400, "error", "valor no numérico");
+            Responser::response(400,  "valor no numérico");
             
         }
     }

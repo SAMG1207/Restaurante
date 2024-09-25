@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\Pedido;
-use App\Helpers\Helper;
+use App\Helpers\Responser;
 use App\Helpers\MyDTO;
 class PedidoController{
  
@@ -19,8 +19,8 @@ class PedidoController{
         $data->id_producto,
         $data->cantidad
     )?
-    Helper::response(201, 'exitoso', 'Pedido hecho correctamente'):
-    Helper::response(400, "error", "error en los argumentos");
+    Responser::response(201,  'Pedido hecho correctamente'):
+    Responser::response(400,  "error en los argumentos");
    }
     public function eliminarPedido(myDTO $data){
         $this->pedido->borrarPedido(
@@ -28,8 +28,8 @@ class PedidoController{
             $data->id_producto,
             $data->cantidad
         )?
-        Helper::response(200, 'exitoso', 'Pedido hecho correctamente'):
-        Helper::response(400, "error", "error en los argumentos");
+        Responser::response(200,  'Pedido hecho correctamente'):
+        Responser::response(400,  "error en los argumentos");
      }   
 
         
@@ -37,9 +37,9 @@ class PedidoController{
         public function verProductos(int $mesa) {
             $productos = $this->pedido->pedidosExistentes($mesa);
             if(!$productos){
-                Helper::response(404, "Error", "No se encontraron productos para la mesa especificada.");
+                Responser::response(404,  "No se encontraron productos para la mesa especificada.");
             }
-                Helper::response(200, "Exitoso", $productos);
+                Responser::response(200,  $productos);
         }
         
     }

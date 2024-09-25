@@ -3,9 +3,8 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\Servicios;
-use Exception;
 use InvalidArgumentException;
-use App\Helpers\Helper;
+use App\Helpers\Responser;
 Class ServiciosController{
 
 
@@ -28,10 +27,12 @@ Class ServiciosController{
         $mesa =$this->validarMesa($data); 
         $idServicio = $this->servicio->abrirServicio($mesa);
         if($idServicio){
-            Helper::response(201, "id_servicio", "$idServicio");
+            header('Content-Type: application/json');
+            http_response_code(201);
+            echo json_encode(["servicio"=>$idServicio]);
             return;
         }else{
-            Helper::response(400, "error", "no se ha podido abrir la mesa");
+            Responser::response(400,  "no se ha podido abrir la mesa");
         } 
     }
 
@@ -40,9 +41,9 @@ Class ServiciosController{
         $mesa = $this->validarMesa($data);
             $servicio = $this->servicio->cerrarMesa($mesa);
                 if($servicio){
-                    Helper::response(201, 'exitoso', 'mesa cerrada');
+                    Responser::response(201,  'mesa cerrada');
                 }else{
-                    Helper::response(400, 'error', 'No se ha podido cerrar la mesa');
+                    Responser::response(400,  'No se ha podido cerrar la mesa');
                 } 
          }
        
@@ -62,7 +63,7 @@ Class ServiciosController{
                     ]
                     ]);
             }else{
-               Helper::response(400, "error", "No se ha completado la operacion");
+               Responser::response(400, "error", "No se ha completado la operacion");
             }
         }
     }
