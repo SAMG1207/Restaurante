@@ -7,7 +7,7 @@ Class Responser{
         http_response_code($code);
         $status = match(http_response_code()){
             200, 201 => "success",
-            400, 401, 404 => 'error'
+            400, 401, 404, 405 => 'error'
         };
         echo json_encode(
         ['status'=>$status,
