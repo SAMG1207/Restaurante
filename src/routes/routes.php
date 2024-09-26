@@ -50,7 +50,9 @@ $router->post('/closeservice', function() use($serviciosController){
     $data = json_decode(file_get_contents('php://input'), true);
     return $serviciosController->cerrarServicioController($data);
 });
-
+$router->get('/seeservice/{mesa:\d+}', function($mesa) use($serviciosController){
+return $serviciosController->verServicio((int)$mesa);
+});
 $router->post('/addproduct', function() use($pedidoController){
     $data = json_decode(file_get_contents('php://input'), true);
     $myDTO = new \App\Helpers\MyDTO(
@@ -74,5 +76,6 @@ $router->delete('/deleteproduct', function() use($pedidoController){
 $router->get('/verproductos/{mesa:\d+}', function($mesa) use($pedidoController){
     return $pedidoController->verProductos((int)$mesa);
 });
+
 
 

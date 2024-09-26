@@ -8,9 +8,7 @@ use App\Helpers\Responser;
 Class ServiciosController{
 
 
-    public function __construct( private Servicios $servicio){
-          
-    }
+    public function __construct( private Servicios $servicio){}
    
 
     private function validarMesa($data) {
@@ -55,7 +53,7 @@ Class ServiciosController{
             if($mesaAbierta){
                 http_response_code(200);
                 echo json_encode([
-                    'status' => 'exitoso',
+                    'status' => 'open',
                     'elementos'=>[
                         'id_servicio'=>$mesaAbierta['id_servicio'],
                         'hora_entrada'=>$mesaAbierta['hora_entrada'],
@@ -63,9 +61,11 @@ Class ServiciosController{
                     ]
                     ]);
             }else{
-               Responser::response(400, "error", "No se ha completado la operacion");
+               Responser::response(400, "No se ha completado la operacion");
             }
         }
+
+     
     }
 
     

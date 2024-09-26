@@ -58,7 +58,13 @@ Class Servicios extends BaseModel{
         return $stmt->fetchColumn();// !== false;
     }
     
-
+    public function checkMesa(int $mesa): bool {
+        $sql = "SELECT COUNT(*)FROM servicios WHERE mesa = ? AND hora_salida IS NULL";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(1, $mesa, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
     public function cerrarMesa(int $mesa): bool {
         
             $idServicio = $this->mesaAbierta($mesa);
