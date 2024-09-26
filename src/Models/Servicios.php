@@ -25,7 +25,7 @@ Class Servicios extends BaseModel{
     
 
     public function abrirServicio(int $mesa) {
-        try {
+        
             // Verifica si la mesa ya está abierta
             if (!$this->mesaAbierta($mesa)) {
                  $sql = "INSERT INTO servicios (mesa, hora_entrada, hora_salida, total_gastado) VALUES (?, NOW(), NULL, NULL)";
@@ -38,14 +38,6 @@ Class Servicios extends BaseModel{
 
                   return false;
             }
-
-        } catch (Exception $e) {
-            // En caso de un error, revertir la transacción y devolver el mensaje de error
-            if ($this->conn->inTransaction()) {
-                $this->conn->rollBack();
-            }
-            throw new Exception("Error al abrir servicio: " . $e->getMessage());
-        }
     }
     
 
