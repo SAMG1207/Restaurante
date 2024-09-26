@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT");
+header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS, HEAD");
 
 require_once __DIR__.'/src/core/error_handler.php';
 require_once __DIR__ . '/vendor/autoload.php';
@@ -28,4 +28,7 @@ try {
     Responser::response(404,  "Route not found");
 } catch (HttpMethodNotAllowedException $e) {
     Responser::response(405,  "Method not allowed");
+} catch (Exception $e) {
+    // Manejo de errores general
+    Responser::response(500, "Internal Server Error: " . $e->getMessage());
 }
