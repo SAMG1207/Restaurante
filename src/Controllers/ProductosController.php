@@ -10,7 +10,7 @@ Class ProductosController{
     }
 
     public function verTodosLosProductosPorTipo(string $tipo): void {
-        $tiposPermitidos = ['pizza', 'bebidas', 'cafe'];
+        $tiposPermitidos = ['pizza', 'bebida', 'cafe'];
         if(in_array($tipo, $tiposPermitidos)){
             $infoProductos=$this->producto->selectPorTipo($tipo);
             Responser::response(200,  $infoProductos);

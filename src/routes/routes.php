@@ -33,11 +33,11 @@ $router->get('/pizzas', function() use ($productoController){
     return $productoController->verTodosLosProductosPorTipo('pizza');
 });
 
-$router->get('bebidas', function() use ($productoController){
+$router->get('/bebidas', function() use ($productoController){
     return $productoController->verTodosLosProductosPorTipo('bebida');
 });
 
-$router->get('cafes', function() use ($productoController){
+$router->get('/cafes', function() use ($productoController){
     return $productoController->verTodosLosProductosPorTipo('cafe');
 });
 
