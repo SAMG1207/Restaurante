@@ -55,6 +55,7 @@ Class ServiciosController{
                     http_response_code(200);
                     echo json_encode([
                         'status' => 'open',
+                        'mesa'=>$mesa,
                         'elementos'=>[
                             'id_servicio'=>$mesaAbierta['id_servicio'],
                             'hora_entrada'=>$mesaAbierta['hora_entrada'],
@@ -65,7 +66,7 @@ Class ServiciosController{
                     http_response_code(200);
                     echo json_encode([
                         'status' => 'closed',
-                     
+                         'mesa'=>$mesa,
                         ]);
                 }
             }
