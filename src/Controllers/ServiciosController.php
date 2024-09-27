@@ -49,18 +49,27 @@ Class ServiciosController{
 
         public function verServicio ( int $mesa): void{
             
-            $mesaAbierta = $this->servicio->seleccionaUnaMesaAbierta($this->servicio->mesaAbierta($mesa));   
-            if($mesaAbierta){
-                http_response_code(200);
-                echo json_encode([
-                    'status' => 'open',
-                    'elementos'=>[
-                        'id_servicio'=>$mesaAbierta['id_servicio'],
-                        'hora_entrada'=>$mesaAbierta['hora_entrada'],
-                        'total_gastado'=>$mesaAbierta['total_gastado']
-                    ]
-                    ]);
-            }else{
+            $mesaAbierta = $this->servicio->seleccionaUnaMesaAbierta($this->servicio->mesaAbierta($mesa));  
+            if($mesa >0 && $mesa  < 7) {
+                if($mesaAbierta){
+                    http_response_code(200);
+                    echo json_encode([
+                        'status' => 'open',
+                        'elementos'=>[
+                            'id_servicio'=>$mesaAbierta['id_servicio'],
+                            'hora_entrada'=>$mesaAbierta['hora_entrada'],
+                            'total_gastado'=>$mesaAbierta['total_gastado']
+                        ]
+                        ]);
+                }else{
+                    http_response_code(200);
+                    echo json_encode([
+                        'status' => 'closed',
+                     
+                        ]);
+                }
+            }
+            else{
                Responser::response(400, "No se ha completado la operacion");
             }
         }
