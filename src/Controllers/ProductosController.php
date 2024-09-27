@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Productos;
 use App\Helpers\Responser;
+use InvalidArgumentException;
 Class ProductosController{
 
     public function __construct(private Productos $producto){
@@ -37,7 +38,7 @@ Class ProductosController{
             }
             Responser::response(200,  $infoProducto);
         }else{
-            Responser::response(400,  "valor no numérico");
+            throw new InvalidArgumentException("El valor debe ser un número");
             
         }
     }

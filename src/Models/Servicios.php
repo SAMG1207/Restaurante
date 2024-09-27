@@ -2,10 +2,8 @@
 declare(strict_types=1);
 namespace App\Models;
 
-use Exception;
 use PDO;
-use PDOException;
-use InvalidArgumentException;
+
 Class Servicios extends BaseModel{
     
 
@@ -42,9 +40,7 @@ Class Servicios extends BaseModel{
     
 
     public function mesaAbierta(int $mesa): mixed {
-        if ($mesa < 1 || $mesa > 6) {
-            throw new InvalidArgumentException("La mesa debe ir entre 1 y 6.");
-        }
+    
         $sql = "SELECT id_servicio FROM servicios WHERE mesa = ? AND hora_salida IS NULL";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(1, $mesa, PDO::PARAM_INT);

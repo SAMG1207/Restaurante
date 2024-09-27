@@ -11,7 +11,7 @@ Class ServiciosController{
     public function __construct( private Servicios $servicio){}
    
 
-    private function validarMesa($data) {
+    private function validarMesa($data):int {
         if (!isset($data['mesa']) || !filter_var($data['mesa'], FILTER_VALIDATE_INT)) {
             throw new InvalidArgumentException("Mesa no es un número.");
         }
@@ -21,7 +21,7 @@ Class ServiciosController{
         }
         return $mesa;
     }
-    public function abrirServicioController($data){
+    public function abrirServicioController($data):void{
         $mesa =$this->validarMesa($data); 
         $idServicio = $this->servicio->abrirServicio($mesa);
         if($idServicio){
@@ -30,12 +30,12 @@ Class ServiciosController{
             echo json_encode(["servicio"=>$idServicio]);
             return;
         }else{
-            Responser::response(400,  "no se ha podido abrir la mesa");
+            Responser::response(400,  "Esta mesa ya está abierta");
         } 
     }
 
     
-       public function cerrarServicioController( $data){
+       public function cerrarServicioController( $data):void{
         $mesa = $this->validarMesa($data);
             $servicio = $this->servicio->cerrarMesa($mesa);
                 if($servicio){
@@ -47,7 +47,7 @@ Class ServiciosController{
        
             
 
-        public function verServicio ( int $mesa): void{
+        public function verServicio (int $mesa): void{
             
             $mesaAbierta = $this->servicio->seleccionaUnaMesaAbierta($this->servicio->mesaAbierta($mesa));  
             if($mesa >0 && $mesa  < 7) {
