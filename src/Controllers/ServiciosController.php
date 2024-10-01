@@ -27,7 +27,8 @@ Class ServiciosController{
         if($idServicio){
             header('Content-Type: application/json');
             http_response_code(201);
-            echo json_encode(["servicio"=>$idServicio]);
+            echo json_encode(["servicio"=>$idServicio,
+                            "message" => "now open"]);
             return;
         }else{
             Responser::response(400,  "Esta mesa ya está abierta");
@@ -39,7 +40,7 @@ Class ServiciosController{
         $mesa = $this->validarMesa($data);
             $servicio = $this->servicio->cerrarMesa($mesa);
                 if($servicio){
-                    Responser::response(201,  'mesa cerrada');
+                    Responser::response(201,  'now closed');
                 }else{
                     Responser::response(400,  'No se ha podido cerrar la mesa');
                 } 

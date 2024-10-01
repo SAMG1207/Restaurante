@@ -17,8 +17,9 @@ Class Pedido extends BaseModel{
         if(!$id_servicio){
             return false;
         }
-        $sql = "SELECT pr.nombre as product, SUM(pe.totalPrecio) as total_producto 
+        $sql = "SELECT pr.nombre as product, SUM(pe.totalPrecio) as total_producto, pr.precio as precioUnit, COUNT(pr.nombre) as cantidad, se.total_gastado as total
         FROM pedidos pe INNER JOIN productos pr ON pe.id_producto = pr.id_producto
+        INNER JOIN servicios se ON pe.id_servicio = se.id_servicio
         WHERE pe.id_servicio = ?
         GROUP BY pr.nombre ";
         $stmt= $this->conn->prepare($sql);
