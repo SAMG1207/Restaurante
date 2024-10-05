@@ -19,8 +19,8 @@ class PedidoController{
         $data->id_producto,
         $data->cantidad
     )?
-    Responser::response(201,  'Pedido hecho correctamente'):
-    Responser::response(400,  "error en los argumentos");
+    Responser::response(201,  'added'):
+    Responser::response(400,  "error");
    }
     public function eliminarPedido(myDTO $data){
         $this->pedido->borrarPedido(
@@ -28,8 +28,8 @@ class PedidoController{
             $data->id_producto,
             $data->cantidad
         )?
-        Responser::response(200,  'Pedido hecho correctamente'):
-        Responser::response(400,  "error en los argumentos");
+        Responser::response(200,  'deleted'):
+        Responser::response(400,  "error");
      }   
 
         
