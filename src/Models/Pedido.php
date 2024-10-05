@@ -12,12 +12,12 @@ Class Pedido extends BaseModel{
         parent::__construct();
     }
 
-    public function pedidosExistentes($mesa){
+    private function pedidosExistentes($mesa){
       $id_servicio = $this->servicio->mesaAbierta($mesa);
         if(!$id_servicio){
             return false;
         }
-        $sql = "SELECT pr.id_producto, pr.nombre as product, SUM(pe.totalPrecio) as total_producto, pr.precio as precioUnit, COUNT(pr.nombre) as cantidad, se.total_gastado as total
+        $sql = "SELECT pr.id_producto, pr.nombre as product, SUM(pe.totalPrecio) as total_producto, pr.precio as precioUnit, COUNT(pr.nombre) as cantidad
         FROM pedidos pe INNER JOIN productos pr ON pe.id_producto = pr.id_producto
         INNER JOIN servicios se ON pe.id_servicio = se.id_servicio
         WHERE pe.id_servicio = ?
@@ -27,6 +27,28 @@ Class Pedido extends BaseModel{
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC)?:false;
         
+    }
+
+    public function totalMesa (int $mesa){
+       $pedidos = $this->pedidosExistentes($mesa);
+       $total = $this->totalGastado($mesa);   
+         return [
+        'pedidos' => $pedidos,
+        'totalGastado' => $total['total'] ?? 0 // Asigna el total gastado, asegurándote que exista.
+         ];
+    }
+
+    private function totalGastado(int $mesa):array{
+        $id_servicio = $this->servicio->mesaAbierta($mesa);
+        if(!$id_servicio){
+            return [];
+        }
+
+        $sql = "SELECT total_gastado as total FROM servicios WHERE id_servicio = ?";
+        $stmt= $this->conn->prepare($sql);
+        $stmt->bindParam(1, $id_servicio);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC)?:[];
     }
   
     public function insertPedido(int $mesa, int $id_producto, int $cantidad = 1){

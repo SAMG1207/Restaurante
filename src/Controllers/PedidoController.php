@@ -35,7 +35,7 @@ class PedidoController{
         
 
         public function verProductos(int $mesa) {
-            $productos = $this->pedido->pedidosExistentes($mesa);
+            $productos = $this->pedido->totalMesa($mesa);
             if(!$productos){
                 Responser::response(404,  "No se encontraron productos para la mesa especificada.");
             }
