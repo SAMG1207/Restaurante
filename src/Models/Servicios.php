@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use PDO;
-
+use InvalidArgumentException;
 Class Servicios extends BaseModel{
     
 
@@ -23,7 +23,9 @@ Class Servicios extends BaseModel{
     
 
     public function abrirServicio(int $mesa) {
-        
+        if ($mesa < 1 || $mesa > 6) {
+            throw new InvalidArgumentException('Número de mesa inválido');
+        }
             // Verifica si la mesa ya está abierta
             if (!$this->mesaAbierta($mesa)) {
                  $sql = "INSERT INTO servicios (mesa, hora_entrada, hora_salida, total_gastado) VALUES (?, NOW(), NULL, NULL)";
@@ -40,6 +42,9 @@ Class Servicios extends BaseModel{
     
 
     public function mesaAbierta(int $mesa): mixed {
+        if($mesa < 1){
+            throw new InvalidArgumentException('Número de mesa inválido');
+        }
     
         $sql = "SELECT id_servicio FROM servicios WHERE mesa = ? AND hora_salida IS NULL";
         $stmt = $this->conn->prepare($sql);
@@ -50,6 +55,9 @@ Class Servicios extends BaseModel{
     }
     
     public function checkMesa(int $mesa): bool {
+        if($mesa < 1){
+            throw new InvalidArgumentException('Número de mesa inválido');
+        }
         $sql = "SELECT COUNT(*)FROM servicios WHERE mesa = ? AND hora_salida IS NULL";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(1, $mesa, PDO::PARAM_INT);
@@ -57,6 +65,9 @@ Class Servicios extends BaseModel{
         return $stmt->fetchColumn() > 0;
     }
     public function cerrarMesa(int $mesa): bool {
+        if($mesa < 1){
+            throw new InvalidArgumentException('Número de mesa inválido');
+        }
         
             $idServicio = $this->mesaAbierta($mesa);
             if ($idServicio) {
