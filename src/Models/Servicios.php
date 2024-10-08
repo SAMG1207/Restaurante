@@ -11,6 +11,12 @@ Class Servicios extends BaseModel{
        parent::__construct();
     }
     
+    private function mesaValidator(int $mesa){
+          if($mesa < 1 || $mesa >6){
+            throw new InvalidArgumentException();
+          }
+          return $mesa;
+    }
     public function seleccionaUnaMesaAbierta($id_servicio){
         
             $sql = "SELECT * FROM servicios WHERE id_servicio = ? and hora_salida IS NULL";
@@ -23,9 +29,7 @@ Class Servicios extends BaseModel{
     
 
     public function abrirServicio(int $mesa) {
-        if ($mesa < 1 || $mesa > 6) {
-            throw new InvalidArgumentException('Número de mesa inválido');
-        }
+             $mesa = $this->mesaValidator($mesa);
             // Verifica si la mesa ya está abierta
             if (!$this->mesaAbierta($mesa)) {
                  $sql = "INSERT INTO servicios (mesa, hora_entrada, hora_salida, total_gastado) VALUES (?, NOW(), NULL, NULL)";
@@ -40,11 +44,9 @@ Class Servicios extends BaseModel{
             }
     }
     
-
+    
     public function mesaAbierta(int $mesa): mixed {
-        if($mesa < 1){
-            throw new InvalidArgumentException('Número de mesa inválido');
-        }
+        $mesa = $this->mesaValidator($mesa);
     
         $sql = "SELECT id_servicio FROM servicios WHERE mesa = ? AND hora_salida IS NULL";
         $stmt = $this->conn->prepare($sql);
@@ -55,9 +57,7 @@ Class Servicios extends BaseModel{
     }
     
     public function checkMesa(int $mesa): bool {
-        if($mesa < 1){
-            throw new InvalidArgumentException('Número de mesa inválido');
-        }
+        $mesa = $this->mesaValidator($mesa);
         $sql = "SELECT COUNT(*)FROM servicios WHERE mesa = ? AND hora_salida IS NULL";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(1, $mesa, PDO::PARAM_INT);
@@ -65,10 +65,7 @@ Class Servicios extends BaseModel{
         return $stmt->fetchColumn() > 0;
     }
     public function cerrarMesa(int $mesa): bool {
-        if($mesa < 1){
-            throw new InvalidArgumentException('Número de mesa inválido');
-        }
-        
+        $mesa = $this->mesaValidator($mesa);
             $idServicio = $this->mesaAbierta($mesa);
             if ($idServicio) {
                 $sql = "UPDATE servicios SET hora_salida = NOW() WHERE id_servicio = ?";
